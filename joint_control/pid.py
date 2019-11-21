@@ -56,8 +56,10 @@ class PIDController(object):
         if not len(target)==len(sensor):
             raise AttributeError("target and actual angle are not the same size")
         for it in range(0,len(target)):
-
-            et= target[it]-sensor[it]
+            #prediction
+            self.y.append(sensor[it]+self.u[it]*self.dt)
+            # current error with prediction
+            et= target[it]-self.y.pop()
             # Equatation taken from the slides
             u_new=self.u[it] + (self.Kp+self.Ki*self.dt+(self.Kd/self.dt))*et-(self.Kp+2*self.Kd/self.dt)*self.e1[it]+(self.Kd/self.dt)*self.e2[it]
 
