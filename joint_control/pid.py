@@ -35,9 +35,9 @@ class PIDController(object):
         self.e2 = np.zeros(size)
         # ADJUST PARAMETERS BELOW
         delay = 0
-        self.Kp = 0
-        self.Ki = 0
-        self.Kd = 0
+        self.Kp = 15
+        self.Ki = 0.1
+        self.Kd = 0.3
         self.y = deque(np.zeros(size), maxlen=delay + 1)
 
     def set_delay(self, delay):
@@ -53,6 +53,18 @@ class PIDController(object):
         @return control signal
         '''
         # YOUR CODE HERE
+        if not len(target)==len(sensor):
+            raise AttributeError("target and actual angle are not the same size")
+        for it in range(0,len(target)):
+
+            et= target[it]-sensor[it]
+            # Equatation taken from the slides
+            u_new=self.u[it] + (self.Kp+self.Ki*self.dt+(self.Kd/self.dt))*et-(self.Kp+2*self.Kd/self.dt)*self.e1[it]+(self.Kd/self.dt)*self.e2[it]
+
+            self.u[it]= u_new
+            self.e2[it]=self.e1[it]
+            self.e1[it]=et
+
 
         return self.u
 
