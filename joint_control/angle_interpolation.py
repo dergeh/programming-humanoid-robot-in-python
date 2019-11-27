@@ -64,16 +64,18 @@ class AngleInterpolationAgent(PIDAgent):
                 # if end of times array is reached robot halts at last given position
                 if end:
                     continue
-                # if index 0 start with 0,0 as position to avoid index faults
+                # if index 0 start with 0,0 as position and 0.3333,0 as control point 1 to avoid index faults
                 if time_index==0:
                     p0=(0,0)
+                    p1=(0.3333,0)
+
                 # else get pervious position
                 else:
                     p0=(0,keys[i][time_index-1][0])
+                    p1=(keys[i][time_index-1][2][1],keys[i][time_index-1][2][2]) # control point 1 
                
                 # set point for bezier interpolation
-                p1=(keys[i][time_index][1][1],keys[i][0][1][2]) # control point 1
-                p2=(keys[i][time_index][2][1],keys[i][0][2][2]) # control point 2
+                p2=(1+keys[i][time_index][1][1],keys[i][time_index][1][2]) # control point 2
                 p3=(1,keys[i][time_index][0]) # destination
 
                 # normalize time so t gets between 0 and 1
@@ -89,7 +91,10 @@ class AngleInterpolationAgent(PIDAgent):
                 n_p2=tuple(x*3*(1-t)*(t**2) for x in p2) 
                 n_p3=tuple(x*(t**3) for x in p3 )
                 b=(n_p0[0]+n_p1[0]+n_p2[0]+n_p3[0], n_p0[1]+n_p1[1]+n_p2[1]+n_p3[1])  
-
+                #if names[i]=="HeadYaw": #for testing the bezier curves writes the interpolated points to a csv file 
+                #    b_t=(b[0]*(upper-lower)+lower)
+                #    test=open("yawTest.csv", "a")
+                #    test.write("%f,%f\n"%(b_t,b[1]))
                 #add interpolated value to target_joint dicct
                 target_joints[names[i]]=b[1]
                 
@@ -98,6 +103,6 @@ class AngleInterpolationAgent(PIDAgent):
 
 if __name__ == '__main__':
     agent = AngleInterpolationAgent()
-    agent.keyframes = leftBellyToStand() # CHANGE DIFFERENT KEYFRAMES
+    agent.keyframes = hello() # CHANGE DIFFERENT KEYFRAMES
     agent.t0=agent.perception.time # set starting time to get relative time in interpolation
     agent.run()
