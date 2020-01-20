@@ -7,6 +7,7 @@
 '''
 
 import weakref
+from jsonrpcclient.http_client import HTTPClient
 
 class PostHandler(object):
     '''the post hander wraps function to be excuted in paralle
@@ -29,11 +30,15 @@ class ClientAgent(object):
     # YOUR CODE HERE
     def __init__(self):
         self.post = PostHandler(self)
+        self.client=client = HTTPClient('http://localhost:4000')
     
     def get_angle(self, joint_name):
         '''get sensor value of given joint'''
-        # YOUR CODE HERE
-    
+        print(joint_name)
+        self.client.request('get_angle', joint_name=joint_name)
+
+    def ping(self, msg):
+        self.client.request('ping',msg)
     def set_angle(self, joint_name, angle):
         '''set target angle of joint for PID controller
         '''
@@ -61,6 +66,7 @@ class ClientAgent(object):
 
 if __name__ == '__main__':
     agent = ClientAgent()
+    print(str(agent.get_angle("HeadYaw")))
     # TEST CODE HERE
 
 
